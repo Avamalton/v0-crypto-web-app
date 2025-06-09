@@ -4,6 +4,7 @@ import { useEffect, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import { Canvas } from '@react-three/fiber'
 import { useAuth } from '@/components/auth-provider'
 import { PublicRecentHistory } from '@/components/public-recent-history'
@@ -12,6 +13,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Coins, Shield, Zap, Users } from 'lucide-react'
 import { Particles } from '@/components/particles/Particles'
 import { OrbitControls } from '@react-three/drei'
+import "@/styles/globals.css"
+import DxmsLogo from "../public/dxmshub.png"
+import { VideoTextDemo } from '@/components/VideoText'
+import { Ripple } from "@/components/magicui/ripple";
+
 
 // Load Particles component dynamically (no SSR)
 
@@ -35,15 +41,36 @@ export default function HomePage() {
 
   return (
     <>
-
-
+   
       {/* Foreground UI */}
       <div className="min-h-screen bg-black text-gray-100">
+
         {/* Hero Section */}
         <div className="container mx-auto px-6 py-20 text-center">
-          <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-transparent bg-clip-text mb-6">
-            BLOCKCHAIN
-          </h1>
+
+          <div className="text-6xl animate-pulse  md:text-7xl font-extrabold bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-transparent bg-clip-text mb-6">
+          <Image 
+          src={DxmsLogo}
+          alt="DXMSHub Logo"
+          width={300}
+          height={300}
+          className="mx-auto mb-6 rounded-full bg-black shadow-lg hover:shadow-yellow-500/50 shadow-white/80 transition-shadow duration-300"
+          loading="eager"
+          priority
+          unoptimized={true} // Use this if you have issues with Next.js image optimization
+          quality={100} // Set quality to 100 for best image quality
+          style={{ width: '300px', height: '300px' }} // Ensure the image is displayed at 150x150 pixels
+         
+          >
+       
+
+          </Image>
+         <div className=' flex items-center pt-20 pb-11 justify-center mx-auto'> 
+          <VideoTextDemo/>
+
+          </div>
+          </div>
+ 
           <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
             Secure. Scalable. Limitless. Buy and sell cryptocurrency instantly with secure payments via QRIS, GoPay, and bank transfer.
           </p>
