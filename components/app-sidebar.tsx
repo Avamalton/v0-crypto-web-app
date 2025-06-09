@@ -30,6 +30,7 @@ import {
   Settings,
   Coins,
   LogOut,
+  UserCircleIcon,
   ChevronUp,
 } from "lucide-react"
 import Link from "next/link"
@@ -75,6 +76,13 @@ const navigationData = {
       title: "Payment Guide",
       url: "/payment-instructions",
       icon: CreditCard,
+    },
+  ],
+    user: [
+    {
+      title: "Your Profile",
+      url: "/profile",
+      icon: UserCircleIcon,
     },
   ],
   admin: [
@@ -168,6 +176,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationData.support.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                    <Link href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        {/* profile */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Profile</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navigationData.user.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <Link href={item.url}>

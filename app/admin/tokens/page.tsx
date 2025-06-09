@@ -10,13 +10,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
 import { ArrowLeft, Plus, Edit, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
-export default function TokensPage() {
+export default function AdminTokensPage() {
   const { user, userProfile, loading } = useAuth()
   const [tokens, setTokens] = useState<any[]>([])
   const [showForm, setShowForm] = useState(false)
@@ -28,10 +29,24 @@ export default function TokensPage() {
     network: "",
     wallet_address: "",
     logo: "",
+    is_active: true,
   })
   const [submitting, setSubmitting] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
+
+  const networkOptions = [
+    { value: "BTC", label: "Bitcoin" },
+    { value: "ERC-20", label: "Ethereum (ERC-20)" },
+    { value: "BNB", label: "BNB Chain" },
+    { value: "TRC-20", label: "Tron (TRC-20)" },
+    { value: "SOL", label: "Solana" },
+    { value: "MATIC", label: "Polygon" },
+    { value: "AVAX", label: "Avalanche" },
+    { value: "FTM", label: "Fantom" },
+    { value: "ATOM", label: "Cosmos" },
+    { value: "DOT", label: "Polkadot" },
+  ]
 
   useEffect(() => {
     if (!loading && (!user || !userProfile?.is_admin)) {
@@ -78,16 +93,7 @@ export default function TokensPage() {
         toast({ title: "Token created successfully" })
       }
 
-      setFormData({
-        name: "",
-        symbol: "",
-        price_idr: "",
-        network: "",
-        wallet_address: "",
-        logo: "",
-      })
-      setEditingToken(null)
-      setShowForm(false)
+      resetForm()
       fetchTokens()
     } catch (error: any) {
       toast({
@@ -98,6 +104,34 @@ export default function TokensPage() {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      symbol: "",
+      price_idr: "",
+      network: "",
+      wallet_address: "",
+      logo: "",
+      is_active: true,
+    })
+    setEditingToken(null)
+    setShowForm(false)
+  }
+
+  const startEdit = (token: any) => {
+    setEditingToken(token)
+    setFormData({
+      name: token.name,
+      symbol: token.symbol,
+      price_idr: token.price_idr.toString(),
+      network: token.network,
+      wallet_address: token.wallet_address,
+      logo: token.logo || "",
+      is_active: token.is_active,
+    })
+    setShowForm(true)
   }
 
   const toggleTokenStatus = async (tokenId: string, isActive: boolean) => {
@@ -132,19 +166,6 @@ export default function TokensPage() {
         variant: "destructive",
       })
     }
-  }
-
-  const startEdit = (token: any) => {
-    setEditingToken(token)
-    setFormData({
-      name: token.name,
-      symbol: token.symbol,
-      price_idr: token.price_idr.toString(),
-      network: token.network,
-      wallet_address: token.wallet_address,
-      logo: token.logo || "",
-    })
-    setShowForm(true)
   }
 
   if (loading) {
@@ -187,11 +208,11 @@ export default function TokensPage() {
             <CardHeader>
               <CardTitle>{editingToken ? "Edit Token" : "Add New Token"}</CardTitle>
               <CardDescription>
-                {editingToken ? "Update token information" : "Create a new cryptocurrency token"}
+                {editingToken ? "Update token information" : "Add a new cryptocurrency to the platform"}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="name">Token Name</Label>
@@ -199,7 +220,7 @@ export default function TokensPage() {
                       id="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="e.g., Tether USD"
+                      placeholder="e.g., Bitcoin"
                       required
                     />
                   </div>
@@ -209,7 +230,7 @@ export default function TokensPage() {
                       id="symbol"
                       value={formData.symbol}
                       onChange={(e) => setFormData({ ...formData, symbol: e.target.value })}
-                      placeholder="e.g., USDT"
+                      placeholder="e.g., BTC"
                       required
                     />
                   </div>
@@ -221,19 +242,27 @@ export default function TokensPage() {
                       step="0.01"
                       value={formData.price_idr}
                       onChange={(e) => setFormData({ ...formData, price_idr: e.target.value })}
-                      placeholder="e.g., 15800"
+                      placeholder="e.g., 500000000"
                       required
                     />
                   </div>
                   <div>
                     <Label htmlFor="network">Network</Label>
-                    <Input
-                      id="network"
+                    <Select
                       value={formData.network}
-                      onChange={(e) => setFormData({ ...formData, network: e.target.value })}
-                      placeholder="e.g., TRC-20"
-                      required
-                    />
+                      onValueChange={(value) => setFormData({ ...formData, network: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select network" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {networkOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label htmlFor="wallet_address">Wallet Address</Label>
@@ -241,40 +270,37 @@ export default function TokensPage() {
                       id="wallet_address"
                       value={formData.wallet_address}
                       onChange={(e) => setFormData({ ...formData, wallet_address: e.target.value })}
-                      placeholder="Admin wallet address"
+                      placeholder="e.g., 0x1234..."
                       required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="logo">Logo URL (optional)</Label>
+                    <Label htmlFor="logo">Logo URL</Label>
                     <Input
                       id="logo"
                       value={formData.logo}
                       onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
-                      placeholder="https://example.com/logo.png"
+                      placeholder="e.g., /images/btc.png"
                     />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Leave empty to use default logo. Use /placeholder.svg?height=32&width=32 for placeholder.
+                    </p>
                   </div>
                 </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    checked={formData.is_active}
+                    onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+                  />
+                  <Label>Active</Label>
+                </div>
+
                 <div className="flex space-x-2">
                   <Button type="submit" disabled={submitting}>
-                    {submitting ? "Saving..." : editingToken ? "Update Token" : "Create Token"}
+                    {submitting ? "Saving..." : editingToken ? "Update Token" : "Add Token"}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setShowForm(false)
-                      setEditingToken(null)
-                      setFormData({
-                        name: "",
-                        symbol: "",
-                        price_idr: "",
-                        network: "",
-                        wallet_address: "",
-                        logo: "",
-                      })
-                    }}
-                  >
+                  <Button type="button" variant="outline" onClick={resetForm}>
                     Cancel
                   </Button>
                 </div>
@@ -285,8 +311,8 @@ export default function TokensPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Tokens</CardTitle>
-            <CardDescription>Manage cryptocurrency tokens and their prices</CardDescription>
+            <CardTitle>All Tokens</CardTitle>
+            <CardDescription>Manage cryptocurrency tokens available on the platform</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -305,11 +331,22 @@ export default function TokensPage() {
                 <TableBody>
                   {tokens.map((token) => (
                     <TableRow key={token.id}>
-                      <TableCell className="font-medium">{token.name}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <img
+                            src={token.logo || "/placeholder.svg?height=32&width=32"}
+                            alt={token.name}
+                            className="w-6 h-6 rounded-full"
+                          />
+                          <span>{token.name}</span>
+                        </div>
+                      </TableCell>
                       <TableCell>{token.symbol}</TableCell>
                       <TableCell>{token.network}</TableCell>
                       <TableCell>Rp {token.price_idr.toLocaleString()}</TableCell>
-                      <TableCell className="font-mono text-sm">{token.wallet_address.substring(0, 10)}...</TableCell>
+                      <TableCell>
+                        <span className="font-mono text-xs">{token.wallet_address.substring(0, 15)}...</span>
+                      </TableCell>
                       <TableCell>
                         <Switch
                           checked={token.is_active}

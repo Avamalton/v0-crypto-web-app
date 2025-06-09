@@ -6,8 +6,9 @@ import { supabase } from "@/lib/supabase"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { BarChart3, TrendingUp, DollarSign, Activity, Calendar, RefreshCw, PieChart, LineChart } from "lucide-react"
+import { BarChart3, TrendingUp, DollarSign, Activity, Calendar, RefreshCw, PieChart, LineChart, ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 // Simple chart components (you can replace with recharts or other chart library)
 const SimpleBarChart = ({ data, title }: { data: any[]; title: string }) => {
@@ -15,8 +16,9 @@ const SimpleBarChart = ({ data, title }: { data: any[]; title: string }) => {
 
   return (
     <div className="space-y-4">
-      <h4 className="font-medium text-sm text-gray-600">{title}</h4>
+
       <div className="space-y-2">
+ 
         {data.map((item, index) => (
           <div key={index} className="flex items-center space-x-3">
             <div className="w-20 text-sm text-gray-600">{item.label}</div>
@@ -322,10 +324,19 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+                  <div className="bg-white shadow">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/dashboard">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Dashboard
+                </Link>
+              </Button>
+            </div>
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Trading Analytics
+          Analytics
           </h1>
           <p className="text-gray-600">Insights into your trading performance</p>
         </div>
@@ -347,6 +358,9 @@ export default function AnalyticsPage() {
           </Button>
         </div>
       </div>
+          </div>
+ 
+      
 
       {loadingData ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">

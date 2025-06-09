@@ -3,17 +3,19 @@
 import { useEffect, useState } from "react"
 import { useAuth } from "@/components/auth-provider"
 import { PublicRecentHistory } from "@/components/public-recent-history"
+import { CryptoPriceTicker } from "@/components/crypto-price-ticker"
 import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Coins, TrendingUp, TrendingDown, History, BarChart3, Store } from "lucide-react"
+import { Coins, TrendingUp, TrendingDown, History, BarChart3, Store, Target, Settings } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 export default function DashboardPage() {
   const { user, userProfile, loading } = useAuth()
   const [recentOrders, setRecentOrders] = useState<any[]>([])
+  const [tokens, setTokens] = useState<any[]>([])
   const [stats, setStats] = useState({
     totalOrders: 0,
     pendingOrders: 0,
@@ -32,6 +34,7 @@ export default function DashboardPage() {
     if (user) {
       fetchRecentOrders()
       fetchStats()
+      fetchTokens()
     }
   }, [user])
 
@@ -72,6 +75,17 @@ export default function DashboardPage() {
     }
   }
 
+  const fetchTokens = async () => {
+    try {
+      const { data, error } = await supabase.from("tokens").select("*").eq("is_active", true).order("name")
+
+      if (error) throw error
+      setTokens(data || [])
+    } catch (error) {
+      console.error("Error fetching tokens:", error)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -93,6 +107,9 @@ export default function DashboardPage() {
         </h1>
         <p className="text-blue-100">Ready to trade some crypto today?</p>
       </div>
+
+      {/* Live Crypto Prices */}
+      <CryptoPriceTicker tokens={tokens} />
 
       {/* Stats Cards */}
       <div className="grid md:grid-cols-4 gap-6">
@@ -157,16 +174,16 @@ export default function DashboardPage() {
         </Button>
 
         <Button asChild variant="outline" className="h-20 border-2 border-purple-200 hover:bg-purple-50">
-          <Link href="/market" className="flex flex-col items-center space-y-2">
-            <Store className="h-6 w-6 text-purple-600" />
-            <span className="font-semibold text-purple-600">Browse Market</span>
+          <Link href="/limit-orders" className="flex flex-col items-center space-y-2">
+            <Target className="h-6 w-6 text-purple-600" />
+            <span className="font-semibold text-purple-600">Limit Orders</span>
           </Link>
         </Button>
 
         <Button asChild variant="outline" className="h-20 border-2 border-orange-200 hover:bg-orange-50">
-          <Link href="/analytics" className="flex flex-col items-center space-y-2">
-            <BarChart3 className="h-6 w-6 text-orange-600" />
-            <span className="font-semibold text-orange-600">View Analytics</span>
+          <Link href="/market" className="flex flex-col items-center space-y-2">
+            <Store className="h-6 w-6 text-orange-600" />
+            <span className="font-semibold text-orange-600">Browse Market</span>
           </Link>
         </Button>
       </div>
@@ -235,6 +252,24 @@ export default function DashboardPage() {
         {/* Public Recent History */}
         <PublicRecentHistory />
       </div>
+
+      {/* Admin Panel Link */}
+      {userProfile?.is_admin && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardHeader>
+            <CardTitle className="text-blue-900">Admin Panel</CardTitle>
+            <CardDescription className="text-blue-700">Manage orders, tokens, and system settings</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild>
+              <Link href="/admin">
+                <Settings className="h-4 w-4 mr-2" />
+                Open Admin Panel
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
