@@ -102,17 +102,17 @@ export default function DashboardPage() {
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-xl p-6 text-white">
-        <h1 className="text-2xl font-bold mb-2">
-          Welcome back, {userProfile?.username || user.email?.split("@")[0]}! 👋
+        <h1 className="text-lg font-bold mb-2">
+          Welcome, {userProfile?.username || user.email?.split("@")[0]}! 👋
         </h1>
-        <p className="text-blue-100">Ready to trade some crypto today?</p>
+        <p className="text-blue-100">Ready to trade crypto today?</p>
       </div>
 
       {/* Live Crypto Prices */}
       <CryptoPriceTicker tokens={tokens} />
 
       {/* Stats Cards */}
-      <div className="grid md:grid-cols-4 gap-6">
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-blue-700">Total Orders</CardTitle>

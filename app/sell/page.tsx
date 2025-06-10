@@ -280,7 +280,6 @@ export default function SellPage() {
                   Back to Dashboard
                 </Link>
               </Button>
-              <h1 className="text-2xl font-bold text-gray-900">Sell Cryptocurrency</h1>
             </div>
             <Button variant="outline" size="sm" onClick={refreshCurrentPrices} disabled={loadingPrices}>
               <RefreshCw className={`h-4 w-4 mr-2 ${loadingPrices ? "animate-spin" : ""}`} />
@@ -312,32 +311,35 @@ export default function SellPage() {
                     <SelectTrigger>
                       <SelectValue placeholder="Choose a cryptocurrency" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {tokens.map((token) => (
-                        <SelectItem key={token.id} value={token.id}>
-                          <div className="flex items-center space-x-2">
-                            <Image
-                              src={token.logo || "/placeholder.svg"}
-                              alt={token.name}
-                              width={20}
-                              height={20}
-                              className="rounded-full"
-                            />
-                            <span>
-                              {token.name} ({token.symbol}) - {token.network}
-                            </span>
-                            <div className="flex items-center space-x-1">
-                              <span className="text-sm text-gray-500">Rp {formatNumber(token.current_price_idr)}</span>
-                              {isUsingCurrentPrice(token) && (
-                                <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                                  Live
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
+         <SelectContent>
+  {tokens.map((token) => (
+    <SelectItem key={token.id} value={token.id}>
+      <div className="flex items-center space-x-3 overflow-hidden">
+        <Image
+          src={token.logo || "/placeholder.svg"}
+          alt={token.name}
+          width={20}
+          height={20}
+          className="rounded-full shrink-0"
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium truncate">
+            {token.name} ({token.symbol}) - {token.network}
+          </p>
+          <div className="flex items-center text-xs text-gray-500">
+            <span>Rp {formatNumber(token.current_price_idr)}</span>
+            {isUsingCurrentPrice(token) && (
+              <Badge variant="secondary" className="ml-2 text-[10px] bg-green-100 text-green-800">
+                Live
+              </Badge>
+            )}
+          </div>
+        </div>
+      </div>
+    </SelectItem>
+  ))}
+</SelectContent>
+
                   </Select>
                 </div>
 
@@ -388,22 +390,29 @@ export default function SellPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="mt-3">
-                      <span className="text-gray-600 text-sm">Send to Admin Wallet:</span>
-                      <div className="bg-white p-3 rounded border mt-1">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-mono">{selectedToken.wallet_address}</span>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => copyToClipboard(selectedToken.wallet_address)}
-                          >
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
+                    <div className="mt-3 w-full">
+  <span className="text-gray-600 text-sm">Send to Admin Wallet:</span>
+
+  <div className="bg-white p-3 rounded border mt-1 w-full overflow-hidden">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+      <span className="text-sm font-mono break-all text-gray-800">
+        {selectedToken.wallet_address}
+      </span>
+
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={() => copyToClipboard(selectedToken.wallet_address)}
+        className="w-max"
+      >
+        <Copy className="h-4 w-4 mr-1" />
+        Copy
+      </Button>
+    </div>
+  </div>
+</div>
+
                     {selectedToken.last_price_update && (
                       <div className="mt-3 text-xs text-gray-500">
                         Last updated: {new Date(selectedToken.last_price_update).toLocaleString()}
@@ -483,26 +492,48 @@ export default function SellPage() {
                   <p className="text-xs text-gray-500 mt-1">Select how you want to receive your IDR payment</p>
                 </div>
 
-                {selectedToken && (
-                  <div className="bg-yellow-50 p-4 rounded-lg">
-                    <h3 className="font-medium mb-2">Sell Instructions</h3>
-                    <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
-                      <li>Send your {selectedToken.symbol} to the admin wallet address above</li>
-                      <li>Copy the transaction hash from your wallet</li>
-                      <li>Paste the transaction hash in the field above</li>
-                      <li>Select your preferred payment method for receiving IDR</li>
-                      <li>Submit your sell order (using current market price)</li>
-                      <li>Admin will verify and transfer IDR payment to your selected method</li>
-                    </ol>
-                  </div>
-                )}
+               {selectedToken && (
+  <div className="bg-yellow-50 p-4 rounded-lg w-full overflow-hidden">
+    <h3 className="font-medium mb-2 text-base">Sell Instructions</h3>
+    <ol className="text-sm text-gray-700 list-decimal list-inside space-y-1 break-words">
+  <div className="bg-white p-4 rounded border space-y-2 w-full overflow-hidden">
+  {/* Wallet Label */}
+  <div className="text-sm text-gray-600 font-medium">Wallet Address</div>
+
+  {/* Address Display */}
+  <div className="font-mono text-sm break-all text-gray-800 bg-gray-100 p-3 rounded select-all">
+    0x718b0c1063183ec4c7b2b737ae26a6ee9be8cea7
+  </div>
+
+  {/* Copy Button */}
+  <Button
+    type="button"
+    variant="outline"
+    size="sm"
+    onClick={() => copyToClipboard("0x718b0c1063183ec4c7b2b737ae26a6ee9be8cea7")}
+    className="flex items-center"
+  >
+    <Copy className="h-4 w-4 mr-2" />
+    Copy Address
+  </Button>
+</div>
+
+      <li>Copy the transaction hash from your wallet</li>
+      <li>Paste the transaction hash in the field above</li>
+      <li>Select your preferred payment method for receiving IDR</li>
+      <li>Submit your sell order (using current market price)</li>
+      <li>Admin will verify and transfer IDR payment to your selected method</li>
+    </ol>
+  </div>
+)}
+
 
                 <Button
                   type="submit"
                   className="w-full"
                   disabled={!selectedToken || !quantity || !txHash || submitting}
                 >
-                  {submitting ? "Creating Sell Order..." : "Create Sell Order with Current Market Price"}
+                  {submitting ? "Creating Sell Order..." : "Create Sell Order Current Price"}
                 </Button>
               </form>
             </CardContent>

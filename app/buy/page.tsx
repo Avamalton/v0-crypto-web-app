@@ -363,298 +363,310 @@ export default function BuyPage() {
     return null
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/dashboard">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Dashboard
-                </Link>
-              </Button>
-              <h1 className="text-2xl font-bold text-gray-900">Buy Cryptocurrency</h1>
-            </div>
-            <Button variant="outline" size="sm" onClick={refreshCurrentPrices} disabled={loadingPrices}>
-              <RefreshCw className={`h-4 w-4 mr-2 ${loadingPrices ? "animate-spin" : ""}`} />
-              {loadingPrices ? "Updating..." : "Refresh Prices"}
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>Buy Crypto</CardTitle>
-              <CardDescription>
-                Select the cryptocurrency you want to buy and complete the payment using current market prices
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <Label htmlFor="token">Select Token</Label>
-                  <Select
-                    onValueChange={(value) => {
-                      const token = tokens.find((t) => t.id === value)
-                      setSelectedToken(token || null)
-                      setQuantity("") // Reset quantity when token changes
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose a cryptocurrency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {tokens.map((token) => (
-                        <SelectItem key={token.id} value={token.id}>
-                          <div className="flex items-center space-x-2">
-                            <Image
-                              src={token.logo || "/placeholder.svg"}
-                              alt={token.name}
-                              width={20}
-                              height={20}
-                              className="rounded-full"
-                            />
-                            <span>
-                              {token.name} ({token.symbol}) - {token.network}
-                            </span>
-                            <div className="flex items-center space-x-1">
-                              <span className="text-sm text-gray-500">Rp {formatNumber(token.current_price_idr)}</span>
-                              {isUsingCurrentPrice(token) && (
-                                <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                                  Live
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {selectedToken && (
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium">Current Market Price</h3>
-                      <div className="flex items-center space-x-2">
-                        {isUsingCurrentPrice(selectedToken) ? (
-                          <Badge variant="secondary" className="bg-green-100 text-green-800">
-                            Live Price
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                            Fallback Price
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-gray-600">IDR Price:</span>
-                        <p className="font-medium text-lg">Rp {formatNumber(selectedToken.current_price_idr)}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-600">USD Price:</span>
-                        <p className="font-medium">${selectedToken.current_price_usd.toFixed(8)}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-600">Network:</span>
-                        <p className="font-medium">{selectedToken.network}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-600">24h Change:</span>
-                        <div className="flex items-center space-x-1">
-                          {selectedToken.price_change_24h >= 0 ? (
-                            <TrendingUp className="h-4 w-4 text-green-500" />
-                          ) : (
-                            <TrendingDown className="h-4 w-4 text-red-500" />
-                          )}
-                          <span
-                            className={`font-medium ${
-                              selectedToken.price_change_24h >= 0 ? "text-green-600" : "text-red-600"
-                            }`}
-                          >
-                            {formatChange(selectedToken.price_change_24h)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    {selectedToken.last_price_update && (
-                      <div className="mt-3 text-xs text-gray-500">
-                        Last updated: {new Date(selectedToken.last_price_update).toLocaleString()}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div>
-                  <Label htmlFor="quantity">Quantity</Label>
-                  <Input
-                    id="quantity"
-                    type="number"
-                    step="0.00000001"
-                    max="999999999"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    placeholder="Enter amount to buy (max: 999,999,999)"
-                    required
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Maximum quantity: 999,999,999</p>
-                </div>
-
-                {validationError && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <div className="flex items-center space-x-2">
-                      <AlertTriangle className="h-4 w-4 text-red-600" />
-                      <span className="text-red-700 text-sm">{validationError}</span>
-                    </div>
-                  </div>
-                )}
-
-                {totalPrice > 0 && !validationError && (
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <h3 className="font-medium mb-2">Order Summary (Current Market Price)</h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Quantity:</span>
-                        <span>
-                          {quantity} {selectedToken?.symbol}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Current price per token:</span>
-                        <span>Rp {formatNumber(selectedToken?.current_price_idr || 0)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Subtotal:</span>
-                        <span>Rp {formatNumber(totalPrice - fees)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Fees (0.1%):</span>
-                        <span>Rp {formatNumber(fees)}</span>
-                      </div>
-                      <div className="flex justify-between font-bold text-lg border-t pt-2">
-                        <span>Total:</span>
-                        <span>Rp {formatNumber(totalPrice)}</span>
-                      </div>
-                    </div>
-                    {selectedToken && isUsingCurrentPrice(selectedToken) && (
-                      <div className="mt-2 text-xs text-green-600">✓ Using live market price from CoinMarketCap</div>
-                    )}
-                  </div>
-                )}
-
-                <div>
-                  <Label>Payment Method</Label>
-                  <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-                    {paymentMethods.map((method) => (
-                      <div key={method.id} className="flex items-center space-x-2">
-                        <RadioGroupItem value={method.name} id={method.name} />
-                        <Label htmlFor={method.name} className="flex items-center space-x-2">
-                          <span>{method.display_name}</span>
-                          <Badge variant="outline" className="text-xs">
-                            {method.type.replace("_", " ").toUpperCase()}
-                          </Badge>
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                </div>
-
-                {selectedToken && paymentMethod && (
-                  <div className="bg-yellow-50 p-4 rounded-lg">
-                    <h3 className="font-medium mb-2">Payment Instructions</h3>
-                    {(() => {
-                      const method = paymentMethods.find((m) => m.name === paymentMethod)
-                      if (!method) return null
-
-                      return (
-                        <div className="space-y-3">
-                          <p className="text-sm text-gray-600">{method.description}</p>
-
-                          {method.qr_code_url && (
-                            <div className="text-center">
-                              <img
-                                src={method.qr_code_url || "/placeholder.svg"}
-                                alt="QR Code"
-                                className="w-48 h-48 mx-auto border rounded-lg"
-                              />
-                              <p className="text-xs text-gray-500 mt-2">Scan with your mobile banking app</p>
-                            </div>
-                          )}
-
-                          {method.account_number && (
-                            <div className="bg-white p-3 rounded border">
-                              <div className="grid grid-cols-2 gap-2 text-sm">
-                                <div>
-                                  <span className="text-gray-600">Account:</span>
-                                  <p className="font-mono">{method.account_number}</p>
-                                </div>
-                                <div>
-                                  <span className="text-gray-600">Name:</span>
-                                  <p className="font-medium">{method.account_name}</p>
-                                </div>
-                                {method.bank_name && (
-                                  <div className="col-span-2">
-                                    <span className="text-gray-600">Bank:</span>
-                                    <p className="font-medium">{method.bank_name}</p>
-                                  </div>
-                                )}
-                              </div>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                className="mt-2"
-                                onClick={() => copyToClipboard(method.account_number)}
-                              >
-                                <Copy className="h-4 w-4 mr-2" />
-                                Copy Account Number
-                              </Button>
-                            </div>
-                          )}
-
-                          <div className="text-sm text-gray-600">
-                            <p className="font-medium mb-1">Instructions:</p>
-                            <p>{method.instructions}</p>
-                          </div>
-                        </div>
-                      )
-                    })()}
-                  </div>
-                )}
-
-                <div>
-                  <Label htmlFor="paymentProof">Payment Proof (Optional)</Label>
-                  <Textarea
-                    id="paymentProof"
-                    value={paymentProof}
-                    onChange={(e) => setPaymentProof(e.target.value)}
-                    placeholder="Enter transaction ID, screenshot description, or other payment proof"
-                    rows={3}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    You can add payment proof now or later in the order details page.
-                  </p>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={!selectedToken || !quantity || !paymentMethod || submitting || !!validationError}
-                >
-                  {submitting ? "Creating Order..." : "Create Order with Current Market Price"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+ return (
+  <div className="min-h-screen bg-gray-50">
+    {/* Header */}
+    <div className="bg-white shadow">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/dashboard" className="flex items-center">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Link>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refreshCurrentPrices}
+            disabled={loadingPrices}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${loadingPrices ? "animate-spin" : ""}`} />
+            {loadingPrices ? "Updating..." : "Refresh Prices"}
+          </Button>
         </div>
       </div>
     </div>
-  )
+
+    {/* Main Content */}
+    <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <Card>
+        <CardHeader>
+          <CardTitle>Buy Crypto</CardTitle>
+          <CardDescription>
+            Select the cryptocurrency you want to buy and complete the payment using current market prices.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Select Token */}
+            <div>
+              <Label htmlFor="token">Select Token</Label>
+              <Select
+                onValueChange={(value) => {
+                  const token = tokens.find((t) => t.id === value)
+                  setSelectedToken(token || null)
+                  setQuantity("")
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose a cryptocurrency" />
+                </SelectTrigger>
+               <SelectContent>
+  {tokens.map((token) => (
+    <SelectItem key={token.id} value={token.id}>
+      <div className="flex items-center space-x-3 overflow-hidden">
+        <Image
+          src={token.logo || "/placeholder.svg"}
+          alt={token.name}
+          width={20}
+          height={20}
+          className="rounded-full shrink-0"
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium truncate">
+            {token.name} ({token.symbol}) - {token.network}
+          </p>
+          <div className="flex items-center text-xs text-gray-500">
+            <span>Rp {formatNumber(token.current_price_idr)}</span>
+            {isUsingCurrentPrice(token) && (
+              <Badge variant="secondary" className="ml-2 text-[10px] bg-green-100 text-green-800">
+                Live
+              </Badge>
+            )}
+          </div>
+        </div>
+      </div>
+    </SelectItem>
+  ))}
+</SelectContent>
+
+              </Select>
+            </div>
+
+            {/* Token Details */}
+            {selectedToken && (
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
+                  <h3 className="font-medium">Current Market Price</h3>
+                  <Badge
+                    variant="secondary"
+                    className={`${
+                      isUsingCurrentPrice(selectedToken) ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                    }`}
+                  >
+                    {isUsingCurrentPrice(selectedToken) ? "Live Price" : "Fallback Price"}
+                  </Badge>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-600">IDR Price:</span>
+                    <p className="font-medium text-lg">Rp {formatNumber(selectedToken.current_price_idr)}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">USD Price:</span>
+                    <p className="font-medium">${selectedToken.current_price_usd.toFixed(8)}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Network:</span>
+                    <p className="font-medium">{selectedToken.network}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">24h Change:</span>
+                    <div className="flex items-center space-x-1">
+                      {selectedToken.price_change_24h >= 0 ? (
+                        <TrendingUp className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <TrendingDown className="h-4 w-4 text-red-500" />
+                      )}
+                      <span
+                        className={`font-medium ${
+                          selectedToken.price_change_24h >= 0 ? "text-green-600" : "text-red-600"
+                        }`}
+                      >
+                        {formatChange(selectedToken.price_change_24h)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                {selectedToken.last_price_update && (
+                  <div className="mt-3 text-xs text-gray-500">
+                    Last updated: {new Date(selectedToken.last_price_update).toLocaleString()}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Quantity */}
+            <div>
+              <Label htmlFor="quantity">Quantity</Label>
+              <Input
+                id="quantity"
+                type="number"
+                step="0.00000001"
+                max="999999999"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                placeholder="Enter amount to buy (max: 999,999,999)"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">Maximum quantity: 999,999,999</p>
+            </div>
+
+            {/* Validation Error */}
+            {validationError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <div className="flex items-center space-x-2">
+                  <AlertTriangle className="h-4 w-4 text-red-600" />
+                  <span className="text-red-700 text-sm">{validationError}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Summary */}
+            {totalPrice > 0 && !validationError && (
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h3 className="font-medium mb-2">Order Summary</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Quantity:</span>
+                    <span>
+                      {quantity} {selectedToken?.symbol}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Price per token:</span>
+                    <span>Rp {formatNumber(selectedToken?.current_price_idr || 0)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Subtotal:</span>
+                    <span>Rp {formatNumber(totalPrice - fees)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Fees (0.1%):</span>
+                    <span>Rp {formatNumber(fees)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-lg border-t pt-2">
+                    <span>Total:</span>
+                    <span>Rp {formatNumber(totalPrice)}</span>
+                  </div>
+                </div>
+                {selectedToken && isUsingCurrentPrice(selectedToken) && (
+                  <div className="mt-2 text-xs text-green-600">
+                    ✓ Using live market price from CoinMarketCap
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Payment Method */}
+            <div>
+              <Label>Payment Method</Label>
+              <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
+                {paymentMethods.map((method) => (
+                  <div key={method.id} className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+                    <RadioGroupItem value={method.name} id={method.name} />
+                    <Label htmlFor={method.name} className="flex items-center space-x-2">
+                      <span>{method.display_name}</span>
+                      <Badge variant="outline" className="text-xs">{method.type.replace("_", " ").toUpperCase()}</Badge>
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+
+            {/* Payment Instructions */}
+            {selectedToken && paymentMethod && (
+              <div className="bg-yellow-50 p-4 rounded-lg">
+                <h3 className="font-medium mb-2">Payment Instructions</h3>
+                {(() => {
+                  const method = paymentMethods.find((m) => m.name === paymentMethod)
+                  if (!method) return null
+
+                  return (
+                    <div className="space-y-3">
+                      <p className="text-sm text-gray-600">{method.description}</p>
+
+                      {method.qr_code_url && (
+                        <div className="text-center">
+                          <img
+                            src={method.qr_code_url}
+                            alt="QR Code"
+                            className="w-48 h-48 mx-auto border rounded-lg"
+                          />
+                          <p className="text-xs text-gray-500 mt-2">Scan with your mobile banking app</p>
+                        </div>
+                      )}
+
+                      {method.account_number && (
+                        <div className="bg-white p-3 rounded border">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                            <div>
+                              <span className="text-gray-600">Account:</span>
+                              <p className="font-mono">{method.account_number}</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Name:</span>
+                              <p className="font-medium">{method.account_name}</p>
+                            </div>
+                            {method.bank_name && (
+                              <div className="col-span-2">
+                                <span className="text-gray-600">Bank:</span>
+                                <p className="font-medium">{method.bank_name}</p>
+                              </div>
+                            )}
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="mt-2"
+                            onClick={() => copyToClipboard(method.account_number)}
+                          >
+                            <Copy className="h-4 w-4 mr-2" />
+                            Copy Account Number
+                          </Button>
+                        </div>
+                      )}
+
+                      <div className="text-sm text-gray-600">
+                        <p className="font-medium mb-1">Instructions:</p>
+                        <p>{method.instructions}</p>
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+
+            {/* Payment Proof */}
+            <div>
+              <Label htmlFor="paymentProof">Payment Proof (Optional)</Label>
+              <Textarea
+                id="paymentProof"
+                value={paymentProof}
+                onChange={(e) => setPaymentProof(e.target.value)}
+                placeholder="Enter transaction ID, screenshot description, or other payment proof"
+                rows={3}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                You can add payment proof now or later in the order details page.
+              </p>
+            </div>
+
+            {/* Submit */}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={!selectedToken || !quantity || !paymentMethod || submitting || !!validationError}
+            >
+              {submitting ? "Creating Order..." : "Create Order Current Price"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  </div>
+)
+
 }

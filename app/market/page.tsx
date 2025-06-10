@@ -70,7 +70,6 @@ export default function MarketPage() {
   const filterAds = () => {
     let filtered = marketAds
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(
         (ad) =>
@@ -80,12 +79,10 @@ export default function MarketPage() {
       )
     }
 
-    // Filter by type
     if (typeFilter !== "all") {
       filtered = filtered.filter((ad) => ad.type === typeFilter)
     }
 
-    // Filter by token
     if (tokenFilter !== "all") {
       filtered = filtered.filter((ad) => ad.token_id === tokenFilter)
     }
@@ -104,7 +101,6 @@ export default function MarketPage() {
       return
     }
 
-    // Here you could implement a chat system or redirect to order creation
     toast({
       title: "Contact Seller",
       description: "Feature coming soon! For now, please create an order directly.",
@@ -121,10 +117,9 @@ export default function MarketPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
-      {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm shadow-lg border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 py-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <Button asChild variant="ghost" size="sm">
                 <Link href="/dashboard">
@@ -133,10 +128,10 @@ export default function MarketPage() {
                 </Link>
               </Button>
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 bg-clip-text text-transparent">
+                <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 bg-clip-text text-transparent">
                   Crypto Market
                 </h1>
-                <p className="text-gray-600">Buy and sell crypto with verified traders</p>
+                <p className="text-sm sm:text-base text-gray-600">Buy and sell crypto with verified traders</p>
               </div>
             </div>
             <div className="flex space-x-2">
@@ -151,8 +146,7 @@ export default function MarketPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Filters */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Card className="mb-8 bg-white/70 backdrop-blur-sm border-0 shadow-xl">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
@@ -161,15 +155,13 @@ export default function MarketPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-4 gap-4">
-              <div>
-                <Input
-                  placeholder="Search ads, tokens..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-white/80"
-                />
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Input
+                placeholder="Search ads, tokens..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-white/80"
+              />
               <Select value={typeFilter} onValueChange={setTypeFilter}>
                 <SelectTrigger className="bg-white/80">
                   <SelectValue placeholder="All Types" />
@@ -201,7 +193,6 @@ export default function MarketPage() {
           </CardContent>
         </Card>
 
-        {/* Market Ads Grid */}
         {filteredAds.length === 0 ? (
           <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
             <CardContent className="text-center py-12">
@@ -211,12 +202,10 @@ export default function MarketPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAds.map((ad) => (
-              <div key={ad.id} className="relative group">
-                {/* Rainbow Border Animation */}
+              <div key={ad.id} className="relative group overflow-hidden rounded-xl">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-600 via-purple-600 via-blue-600 via-green-600 via-yellow-600 to-red-600 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-gradient-x"></div>
-
                 <Card className="relative bg-white/90 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                   <CardHeader className="pb-3">
                     <div className="flex justify-between items-start mb-2">
@@ -228,11 +217,7 @@ export default function MarketPage() {
                             : "bg-gradient-to-r from-blue-500 to-cyan-600 text-white border-0"
                         } px-3 py-1`}
                       >
-                        {ad.type === "buy" ? (
-                          <TrendingDown className="h-3 w-3 mr-1" />
-                        ) : (
-                          <TrendingUp className="h-3 w-3 mr-1" />
-                        )}
+                        {ad.type === "buy" ? <TrendingDown className="h-3 w-3 mr-1" /> : <TrendingUp className="h-3 w-3 mr-1" />}
                         {ad.type === "buy" ? "BUYING" : "SELLING"}
                       </Badge>
                       <div className="flex items-center space-x-1 text-xs text-gray-500">
@@ -248,7 +233,6 @@ export default function MarketPage() {
                     )}
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {/* Token Info */}
                     <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg">
                       <Image
                         src={ad.tokens.logo || "/placeholder.svg"}
@@ -262,16 +246,12 @@ export default function MarketPage() {
                         <p className="text-xs text-gray-600">{ad.tokens.network}</p>
                       </div>
                     </div>
-
-                    {/* Price */}
                     <div className="text-center p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
                       <p className="text-sm text-gray-600 mb-1">Price per {ad.tokens.symbol}</p>
                       <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                         Rp {ad.price_idr.toLocaleString()}
                       </p>
                     </div>
-
-                    {/* Amount Range */}
                     {(ad.min_amount || ad.max_amount) && (
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Amount:</span>
@@ -284,8 +264,6 @@ export default function MarketPage() {
                         </span>
                       </div>
                     )}
-
-                    {/* Payment Methods */}
                     {ad.payment_methods && ad.payment_methods.length > 0 && (
                       <div>
                         <p className="text-sm text-gray-600 mb-2">Payment Methods:</p>
@@ -303,8 +281,6 @@ export default function MarketPage() {
                         </div>
                       </div>
                     )}
-
-                    {/* Trader Info */}
                     <div className="flex items-center justify-between pt-2 border-t">
                       <div className="flex items-center space-x-2">
                         <Users className="h-4 w-4 text-gray-500" />
@@ -314,8 +290,6 @@ export default function MarketPage() {
                         ✓ Verified
                       </Badge>
                     </div>
-
-                    {/* Action Button */}
                     <Button
                       onClick={() => handleContactSeller(ad)}
                       className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105"
@@ -323,12 +297,10 @@ export default function MarketPage() {
                       <MessageCircle className="h-4 w-4 mr-2" />
                       {ad.type === "buy" ? "Sell to Trader" : "Buy from Trader"}
                     </Button>
-
-                    {/* Terms */}
                     {ad.terms && (
-                      <details className="text-xs text-gray-600">
+                      <details className="text-xs text-gray-600 mt-2">
                         <summary className="cursor-pointer hover:text-gray-800">Terms & Conditions</summary>
-                        <p className="mt-2 p-2 bg-gray-50 rounded">{ad.terms}</p>
+                        <p className="mt-2 p-2 bg-gray-50 rounded text-wrap">{ad.terms}</p>
                       </details>
                     )}
                   </CardContent>
@@ -339,7 +311,6 @@ export default function MarketPage() {
         )}
       </div>
 
-      {/* Custom CSS for gradient animation */}
       <style jsx>{`
         @keyframes gradient-x {
           0%, 100% {

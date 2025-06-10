@@ -324,8 +324,9 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-                  <div className="bg-white shadow">
-          <div className="flex items-center justify-between">
+                <div className="bg-white shadow">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-4 py-3">
+
             <div className="flex items-center space-x-4">
               <Button asChild variant="ghost" size="sm">
                 <Link href="/dashboard">
@@ -335,28 +336,29 @@ export default function AnalyticsPage() {
               </Button>
             </div>
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          Analytics
-          </h1>
-          <p className="text-gray-600">Insights into your trading performance</p>
+        <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+    Analytics
+  </h1>
+  <p className="text-sm text-gray-600">Insights into your trading performance</p>
         </div>
-        <div className="flex items-center space-x-4">
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7d">Last 7 days</SelectItem>
-              <SelectItem value="30d">Last 30 days</SelectItem>
-              <SelectItem value="90d">Last 90 days</SelectItem>
-              <SelectItem value="1y">Last year</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button onClick={fetchAnalytics} variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-        </div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+  <Select value={timeRange} onValueChange={setTimeRange}>
+    <SelectTrigger className="w-full sm:w-32">
+      <SelectValue placeholder="Select range" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="7d">Last 7 days</SelectItem>
+      <SelectItem value="30d">Last 30 days</SelectItem>
+      <SelectItem value="90d">Last 90 days</SelectItem>
+      <SelectItem value="1y">Last year</SelectItem>
+    </SelectContent>
+  </Select>
+  <Button onClick={fetchAnalytics} variant="outline" size="sm" className="w-full sm:w-auto">
+    <RefreshCw className="h-4 w-4 mr-2" />
+    Refresh
+  </Button>
+</div>
+
       </div>
           </div>
  

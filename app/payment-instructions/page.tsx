@@ -94,8 +94,8 @@ export default function PaymentInstructionsPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm shadow-lg border-b">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center space-x-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+<div className="flex flex-wrap sm:flex-nowrap items-start sm:items-center gap-2 sm:gap-4">
             <Button asChild variant="ghost" size="sm">
               <Link href="/dashboard">
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -103,7 +103,7 @@ export default function PaymentInstructionsPage() {
               </Link>
             </Button>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 Payment Instructions
               </h1>
               <p className="text-gray-600">Complete guide for all payment methods</p>
@@ -114,7 +114,7 @@ export default function PaymentInstructionsPage() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Overview Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
           <Card className="bg-gradient-to-br from-purple-500 to-pink-500 text-white border-0 shadow-xl">
             <CardContent className="p-6">
               <div className="flex items-center space-x-3">
@@ -162,7 +162,8 @@ export default function PaymentInstructionsPage() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="qris" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 mb-8">
+
+<TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 gap-2 mb-6">
                 <TabsTrigger value="qris" className="flex items-center space-x-2">
                   <QrCode className="h-4 w-4" />
                   <span>QRIS</span>

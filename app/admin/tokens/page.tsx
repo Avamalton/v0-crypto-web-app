@@ -192,7 +192,6 @@ export default function AdminTokensPage() {
                   Back to Admin
                 </Link>
               </Button>
-              <h1 className="text-2xl font-bold text-gray-900">Manage Tokens</h1>
             </div>
             <Button onClick={() => setShowForm(true)}>
               <Plus className="h-4 w-4 mr-2" />

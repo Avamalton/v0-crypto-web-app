@@ -16,7 +16,12 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -38,85 +43,68 @@ import Link from "next/link"
 // Navigation data
 const navigationData = {
   main: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: Home,
-    },
-    {
-      title: "Analytics",
-      url: "/analytics",
-      icon: BarChart3,
-    },
-    {
-      title: "Market",
-      url: "/market",
-      icon: Store,
-    },
+    { title: "Dashboard", url: "/dashboard", icon: Home },
+    { title: "Analytics", url: "/analytics", icon: BarChart3 },
+    { title: "Market", url: "/market", icon: Store },
   ],
   trading: [
-    {
-      title: "Buy Crypto",
-      url: "/buy",
-      icon: TrendingUp,
-    },
-    {
-      title: "Sell Crypto",
-      url: "/sell",
-      icon: TrendingDown,
-    },
-    {
-      title: "Order History",
-      url: "/orders",
-      icon: History,
-    },
+    { title: "Buy Crypto", url: "/buy", icon: TrendingUp },
+    { title: "Sell Crypto", url: "/sell", icon: TrendingDown },
+    { title: "Order History", url: "/orders", icon: History },
   ],
   support: [
-    {
-      title: "Payment Guide",
-      url: "/payment-instructions",
-      icon: CreditCard,
-    },
+    { title: "Payment Guide", url: "/payment-instructions", icon: CreditCard },
   ],
-    user: [
-    {
-      title: "Your Profile",
-      url: "/profile",
-      icon: UserCircleIcon,
-    },
+  user: [
+    { title: "Your Profile", url: "/profile", icon: UserCircleIcon },
   ],
   admin: [
-    {
-      title: "Admin Panel",
-      url: "/admin",
-      icon: Settings,
-    },
-    {
-      title: "Market Ads",
-      url: "/admin/market",
-      icon: Store,
-    },
-    {
-      title: "Manage Tokens",
-      url: "/admin/tokens",
-      icon: Coins,
-    },
+    { title: "Admin Panel", url: "/admin", icon: Settings },
+    { title: "Market Ads", url: "/admin/market", icon: Store },
+    { title: "Manage Tokens", url: "/admin/tokens", icon: Coins },
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+// Utility for rendering a group
+const renderNavGroup = (
+  label: string,
+  items: typeof navigationData.main,
+  isActive: (url: string) => boolean
+) => (
+  <SidebarGroup>
+    <SidebarGroupLabel>{label}</SidebarGroupLabel>
+    <SidebarGroupContent>
+      <SidebarMenu>
+        {items.map((item) => (
+          <SidebarMenuItem key={item.title}>
+            <SidebarMenuButton asChild isActive={isActive(item.url)}>
+              <Link href={item.url}>
+                <item.icon />
+                <span>{item.title}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ))}
+      </SidebarMenu>
+    </SidebarGroupContent>
+  </SidebarGroup>
+)
+
+export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const { user, userProfile, signOut } = useAuth()
   const pathname = usePathname()
 
-  const isActive = (url: string) => {
-    if (url === "/dashboard") {
-      return pathname === "/dashboard"
-    }
-    return pathname.startsWith(url)
-  }
+  const isActive = (url: string) =>
+    pathname === url || pathname.startsWith(`${url}/`)
+
+  const getInitial = () =>
+    userProfile?.username?.[0]?.toUpperCase() ??
+    user?.email?.[0]?.toUpperCase() ??
+    "U"
 
   return (
     <Sidebar variant="inset" {...props}>
+      {/* Header */}
       <SidebarHeader>
         <div className="flex items-center space-x-3 px-3 py-2">
           <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -131,83 +119,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </div>
       </SidebarHeader>
 
+      {/* Content */}
       <SidebarContent>
-        {/* Main Navigation */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navigationData.main.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {renderNavGroup("Main", navigationData.main, isActive)}
+        {renderNavGroup("Trading", navigationData.trading, isActive)}
+        {renderNavGroup("Support", navigationData.support, isActive)}
+        {renderNavGroup("Profile", navigationData.user, isActive)}
 
-        {/* Trading */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Trading</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navigationData.trading.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Support */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Support</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navigationData.support.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        {/* profile */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Profile</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navigationData.user.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Admin Section - Only show for admins */}
+        {/* Admin only */}
         {userProfile?.is_admin && (
           <SidebarGroup>
             <SidebarGroupLabel>
@@ -236,6 +155,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         )}
       </SidebarContent>
 
+      {/* Footer */}
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -247,7 +167,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarFallback className="rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                      {userProfile?.username?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "U"}
+                      {getInitial()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
@@ -274,6 +194,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+
+      {/* Optional rail (remove if unused) */}
       <SidebarRail />
     </Sidebar>
   )

@@ -224,7 +224,8 @@ export default function AdminMarketPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow">
-        <div className="container mx-auto px-4 py-4">
+<div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+  <h1 className="text-2xl font-bold mb-4">Manage Market Ads</h1>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Button asChild variant="ghost" size="sm">
@@ -233,9 +234,8 @@ export default function AdminMarketPage() {
                   Back to Admin
                 </Link>
               </Button>
-              <h1 className="text-2xl font-bold text-gray-900">Market Advertisements</h1>
             </div>
-            <Button onClick={() => setShowForm(true)}>
+<Button onClick={() => setShowForm(true)} className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Create Ad
             </Button>
@@ -243,7 +243,7 @@ export default function AdminMarketPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+<div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         {showForm && (
           <Card className="mb-8">
             <CardHeader>
@@ -254,7 +254,7 @@ export default function AdminMarketPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="title">Title</Label>
                     <Input
@@ -336,7 +336,7 @@ export default function AdminMarketPage() {
 
                 <div>
                   <Label>Payment Methods</Label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-2">
                     {paymentMethods.map((method) => (
                       <div key={method.id} className="flex items-center space-x-2">
                         <Checkbox
@@ -387,13 +387,40 @@ export default function AdminMarketPage() {
           </Card>
         )}
 
+      {/* Mobile cards */}
+      <div className="sm:hidden space-y-4">
+        {marketAds.map((ad) => (
+          <Card key={ad.id}>
+            <CardContent className="py-4 px-4 space-y-1">
+              <div className="text-lg font-semibold">{ad.title}</div>
+              <div className="text-sm text-gray-600">{ad.description}</div>
+              <div className="text-sm">Token: {ad.tokens?.symbol} ({ad.tokens?.network})</div>
+              <div className="text-sm">Price: Rp {ad.price_idr.toLocaleString()}</div>
+              <div className="text-sm">Type: {ad.type}</div>
+              <div className="text-sm">Range: {ad.min_amount} - {ad.max_amount ?? "∞"}</div>
+              <div className="flex justify-between items-center pt-2">
+                <Switch checked={ad.is_active} onCheckedChange={(checked) => toggleAdStatus(ad.id, checked)} />
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm" onClick={() => startEdit(ad)}>
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => deleteAd(ad.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
         <Card>
           <CardHeader>
             <CardTitle>Market Advertisements</CardTitle>
             <CardDescription>Manage buy and sell advertisements</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
+<div className="overflow-x-auto max-w-full sm:rounded-lg">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -458,6 +485,7 @@ export default function AdminMarketPage() {
                   ))}
                 </TableBody>
               </Table>
+              
             </div>
           </CardContent>
         </Card>
