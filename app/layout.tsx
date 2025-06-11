@@ -4,7 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { AuthProvider } from "@/components/auth-provider"
 import { Toaster } from "@/components/ui/toaster"
-
+import ParticlesBackground from "@/components/background/ParticlesBackground"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
@@ -20,12 +20,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+       {/* Background Particles */}
+      
       <body className={inter.className}>
         <AuthProvider>
+        
           {children}
           <Toaster />
         </AuthProvider>
       </body>
+
     </html>
   )
 }
