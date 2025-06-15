@@ -26,7 +26,7 @@ export default function AdsenseSetup() {
       className="adsbygoogle"
       style={{ display: "block" }}
       data-ad-client="ca-pub-5347912081141742"
-      data-ad-slot="f08c47fec0942fa0" // ganti slot ID kamu
+      data-ad-slot="1726483816" // ganti slot ID kamu
       data-ad-format="auto"
       data-full-width-responsive="true"
     />
