@@ -21,6 +21,16 @@ export default function RootLayout({
   return (
     <html lang="en">
        {/* Background Particles */}
+        <head>
+        {/* AdSense Script */}
+        <script
+          async
+         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5347912081141742"
+
+          crossOrigin="anonymous"
+        ></script>
+      
+      </head>
       
       <body className={inter.className}>
         <AuthProvider>

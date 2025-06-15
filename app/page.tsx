@@ -11,7 +11,7 @@ import { Coins, Shield, Zap, Users } from "lucide-react"
 import "@/styles/globals.css"
 import ParticlesBackground from "@/components/background/ParticlesBackground"
 import DxmsLogoPath from "@/components/Dxms-logo-particles"
-
+import AdsenseSetup from "@/components/AdsenseSetup"
 export default function HomePage() {
   const { user, loading } = useAuth()
   const router = useRouter()
@@ -75,7 +75,7 @@ export default function HomePage() {
 </div>
 
             </div>
-
+<AdsenseSetup/>
           {/* Feature Section */}
 <div className="container mx-auto px-6 py-16 grid lg:grid-cols-2 gap-10">
   <div className="lg:col-span-2 grid md:grid-cols-2 gap-6">
